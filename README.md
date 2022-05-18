@@ -182,3 +182,10 @@ export class CounterOutputComponent implements OnInit {
 <h3>Counter: {{ counter$ | async }}</h3>
 <h4>Title is {{ title$ | async }}</h4>
 ```
+
+Install Redux Chrome Extension and ngrx store dev tools for debugging
+```
+npm install @ngrx/store-devtools@10 
+```
+
+Application should have only one state

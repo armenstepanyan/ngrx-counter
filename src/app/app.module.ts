@@ -7,8 +7,16 @@ import { CounterButtonsComponent } from './counter/counter-buttons/counter-butto
 import { CounterComponent } from './counter/counter/counter.component';
 import { CustomCounterInputComponent } from './counter/custom-counter-input/custom-counter-input.component';
 import { StoreModule } from '@ngrx/store';
-import { counterReducer } from '@app/counter/state/counter.reducer';
+
 import { FormsModule } from '@angular/forms';
+import { HomeComponent } from './home/home.component';
+
+import { HeaderComponent } from './header/header.component';
+import { AppRoutingModule } from './app-routing.module';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from 'src/environments/environment';
+import { PostListComponent } from './posts/post-list/post-list.component';
+import { appReducer } from './store/app.state';
 
 @NgModule({
   declarations: [
@@ -16,12 +24,22 @@ import { FormsModule } from '@angular/forms';
     CounterOutputComponent,
     CounterButtonsComponent,
     CounterComponent,
-    CustomCounterInputComponent
+    CustomCounterInputComponent,
+    HomeComponent,
+    HeaderComponent,
+    PostListComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    StoreModule.forRoot({ counter: counterReducer })
+    AppRoutingModule,
+    StoreModule.forRoot(appReducer),
+
+    // Instrumentation must be imported after importing StoreModule (config is optional)
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production, // Restrict extension to log-only mode
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]
