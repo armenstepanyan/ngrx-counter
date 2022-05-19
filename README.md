@@ -218,3 +218,31 @@ app.module
     StoreModule.forRoot(appReducer),
   ]
 ```
+
+### Lazy load the ngrx state using for Feature store Module
+Remove reducers from app.module and add them to features modules
+app.module.ts
+```
+@NgModule({
+  declarations: [],
+  imports: [    
+    StoreModule.forRoot({}),
+    
+  ]
+})
+```
+
+posts.module.ts
+```
+import { POSTS_STATE_NAME } from './state/posts.selector';
+import { postsReducer } from './state/posts.reducer';
+
+@NgModule({
+  declarations: [],
+  imports: [
+    ...
+    StoreModule.forFeature(POSTS_STATE_NAME, postsReducer)
+  ],
+})
+export class PostsModule {}
+```
