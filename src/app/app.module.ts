@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -13,6 +14,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'src/environments/environment';
 import { appReducer } from './store/app.state';
+import { EffectsModule } from '@ngrx/effects';
 
 
 
@@ -27,11 +29,15 @@ import { appReducer } from './store/app.state';
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+
+    EffectsModule.forRoot([]),
     StoreModule.forRoot({}),
+
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: environment.production,
     }),
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

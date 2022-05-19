@@ -246,3 +246,37 @@ import { postsReducer } from './state/posts.reducer';
 })
 export class PostsModule {}
 ```
+
+### Install ngrx/effects
+```
+npm i @ngrx/effects@10
+```
+
+Register in app.module
+```
+@NgModule({
+  declarations: [ ],
+  imports: [
+    ...
+    EffectsModule.forRoot([]),
+    StoreModule.forRoot({}),
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+```
+
+Register effects for feature modules
+auth.module.ts
+```
+@NgModule({
+  declarations: [LoginComponent],
+  imports: [
+    ...
+    StoreModule.forFeature(AUTH_STATE_NAME, AuthReducer),
+    EffectsModule.forFeature([AuthEffects]),
+  ],
+})
+export class AuthModule {}
+
+```
