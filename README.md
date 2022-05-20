@@ -339,3 +339,64 @@ onLoginSubmit() {
 
 ```
 
+Handle http errors
+
+```
+  login$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(loginStart),
+      exhaustMap((action) => {
+        this.store.dispatch(setLoadingSpinner({ status: true }));
+        return this.authService.login(action.email, action.password).pipe(
+          map((data: AuthResponseData) => {
+            // hide loader
+            this.store.dispatch(setLoadingSpinner({ status: false }));
+            // clear errors messages
+            this.store.dispatch(setErrorMessage({ message: '' }));
+            const user = this.authService.formatUser(data)
+            return loginSuccess({ user });
+          }),
+          catchError(errorResponse => {
+            const resp = errorResponse.error as ErrorMessage;
+            const message = this.authService.getErrorMessage(resp.error.message);
+            // hide loader
+            this.store.dispatch(setLoadingSpinner({ status: false }));
+            return of(setErrorMessage({ message }));
+          })
+        );
+      })
+    );
+  });
+```
+
+Redirect to home page after login. `dispatch: false` means that createEffect do not return any observable
+when `loginSuccess` is happen this function should works
+```
+  loginRedirect$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(loginSuccess),
+        tap((action) => {
+          this.router.navigate(['/']);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+```
+Now we need to move authState to global state because auth.user is used in header component.
+Need to remove `StoreModule.forFeature` and still keep `EffectsModule.forFeature([AuthEffects])` in auth.module.ts
+
+```
+@NgModule({
+  declarations: [LoginComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    // StoreModule.forFeature(AUTH_STATE_NAME, AuthReducer), <- reomove this>
+    EffectsModule.forFeature([AuthEffects]),
+    RouterModule.forChild(routes)
+  ],
+})
+export class AuthModule {}
+```
