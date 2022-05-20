@@ -11,13 +11,13 @@ const _authReducer = createReducer(
       user: action.user,
     };
   }),
- /* on(signupSuccess, (state, action) => {
+  on(signupSuccess, (state, action) => {
     return {
       ...state,
       user: action.user,
     };
   }),
-  on(autoLogout, (state) => {
+ /* on(autoLogout, (state) => {
     return {
       ...state,
       user: null,

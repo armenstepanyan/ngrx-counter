@@ -376,6 +376,8 @@ when `loginSuccess` is happen this function should works
     () => {
       return this.actions$.pipe(
         ofType(loginSuccess),
+        // or multiple actions
+        // ofType(...[loginSuccess, signupSuccess]),
         tap((action) => {
           this.router.navigate(['/']);
         })

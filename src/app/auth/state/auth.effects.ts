@@ -1,6 +1,6 @@
 import { AuthService } from '@app/services/auth.service';
 import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { loginStart, loginSuccess } from './auth.actions';
+import { loginStart, loginSuccess, signupStart, signupSuccess } from './auth.actions';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
 import { AuthResponseData } from '@app/models/AuthResponseData.model';
@@ -56,8 +56,11 @@ export class AuthEffects {
   loginRedirect$ = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(loginSuccess),
+        // ofType(loginSuccess),
+        ofType(...[loginSuccess, signupSuccess]),
         tap((action) => {
+          // clear error
+          this.store.dispatch(setErrorMessage({ message: '' }));
           this.router.navigate(['/']);
         })
       );
@@ -65,5 +68,26 @@ export class AuthEffects {
     { dispatch: false }
   );
 
+  signUp$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(signupStart),
+      exhaustMap((action) => {
+        return this.authService.signUp(action.email, action.password).pipe(
+          map((data) => {
+            this.store.dispatch(setLoadingSpinner({ status: false }));
+            const user = this.authService.formatUser(data);
+            return signupSuccess({ user });
+          }),
+          catchError(errorResponse => {
+            const resp = errorResponse.error as ErrorMessage;
+            const message = this.authService.getErrorMessage(resp.error.message);
+            // hide loader
+            this.store.dispatch(setLoadingSpinner({ status: false }));
+            return of(setErrorMessage({ message }));
+          })
+        );
+      })
+    );
+  });
 
 }
