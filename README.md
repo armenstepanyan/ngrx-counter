@@ -280,3 +280,62 @@ auth.module.ts
 export class AuthModule {}
 
 ```
+
+auth.effects.ts
+```
+@Injectable()
+export class AuthEffects {
+  constructor(private actions$: Actions, private authService: AuthService) {}
+
+  login$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(loginStart), // <-- action name
+      exhaustMap((action) => {
+        return this.authService.login(action.email, action.password).pipe(
+          map((data: AuthResponseData) => {
+            const user = this.authService.formatUser(data)
+            return loginSuccess({ user });
+          })
+        );
+      })
+    );
+  });
+}
+
+```
+auth.reducer
+```
+const _authReducer = createReducer(
+  initialState,
+  on(loginSuccess, (state, action) => {
+    return {
+      ...state,
+      user: action.user,
+    };
+  }), 
+);
+```
+
+auth.service
+```
+export class AuthService {
+  constructor(private http: HttpClient) {}
+
+  login(email: string, password: string): Observable<AuthResponseData> {
+    return this.http.post<AuthResponseData>(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.FIREBASE_API_KEY}`,
+      { email, password, returnSecureToken: true }
+    );
+  }
+ }
+
+```
+`loginStart` action is called in login.component.ts and now the effects is listening this action instead of reducer
+```
+onLoginSubmit() {
+   const { email, password } = this.loginForm.value;
+   this.store.dispatch(loginStart({ email, password }));
+  }
+
+```
+
