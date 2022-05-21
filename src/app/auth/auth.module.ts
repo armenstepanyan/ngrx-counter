@@ -3,9 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-
-import { AuthEffects } from './state';
-import { EffectsModule } from '@ngrx/effects';
 import { SignupComponent } from './signup/signup.component';
 
 const routes: Routes = [
@@ -24,7 +21,6 @@ const routes: Routes = [
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    EffectsModule.forFeature([AuthEffects]),
     RouterModule.forChild(routes)
   ],
 })

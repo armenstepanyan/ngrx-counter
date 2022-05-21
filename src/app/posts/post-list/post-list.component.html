@@ -2,7 +2,10 @@
   <a [routerLink]="['/posts/add']" class="btn btn-primary">Add post</a>
 </p>
 <div class="row">
-  <div class="col-md-8">
+  <div class="col-md-12">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="col-md-12">
     <h3>Posts List</h3>
 
     <table class="table table-striped" *ngIf="posts | async as postsData">
@@ -27,8 +30,5 @@
         </tr>
       </tbody>
     </table>
-  </div>
-  <div class="col-md-4">
-    <router-outlet></router-outlet>
   </div>
 </div>

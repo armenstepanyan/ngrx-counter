@@ -33,9 +33,16 @@
       <div class="my-3">
         <button
           type="submit"
-          class="btn btn-primary"
+          class="btn btn-primary me-2"
         >
           Add Post
+        </button>
+        <button
+          type="button"
+          class="btn btn-warning"
+          [routerLink]="['/posts']"
+        >
+          Cancel
         </button>
       </div>
     </form>

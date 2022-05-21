@@ -8,6 +8,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { StoreModule } from '@ngrx/store';
 import { POSTS_STATE_NAME } from './state/posts.selector';
 import { postsReducer } from './state/posts.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { PostsEffects } from './state/posts.effects';
 
 const routes: Routes = [
   {
@@ -35,7 +37,8 @@ const routes: Routes = [
     CommonModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
-    StoreModule.forFeature(POSTS_STATE_NAME, postsReducer)
+    StoreModule.forFeature(POSTS_STATE_NAME, postsReducer),
+    EffectsModule.forFeature([PostsEffects])
   ],
 })
 export class PostsModule {}

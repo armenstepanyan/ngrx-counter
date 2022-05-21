@@ -1,5 +1,5 @@
-import { signupStart } from './../state/auth.actions';
-import { setLoadingSpinner } from './../../store/Shared/shared.actions';
+import { signupStart } from '@app/auth/state/auth.actions';
+import { setLoadingSpinner } from '@app/store/Shared/shared.actions';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';

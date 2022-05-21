@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { appReducer } from './store/app.state';
 import { EffectsModule } from '@ngrx/effects';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
+import { AuthEffects } from '@app/auth/state';
 
 
 
@@ -32,7 +33,7 @@ import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loa
     ReactiveFormsModule,
     AppRoutingModule,
 
-    EffectsModule.forRoot([]),
+    EffectsModule.forRoot([AuthEffects]),
     StoreModule.forRoot(appReducer),
 
     StoreDevtoolsModule.instrument({

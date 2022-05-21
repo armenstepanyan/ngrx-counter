@@ -4,12 +4,18 @@ import { Injectable } from '@angular/core';
 import { AuthResponseData } from '@app/models/AuthResponseData.model';
 import { Observable } from 'rxjs';
 import { User } from '@app/models/user.model';
+import { Store } from '@ngrx/store';
+import { AppState } from '@app/store/app.state';
+import { autoLogout } from '@app/auth/state';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+
+  timeoutInterval: any;
+
+  constructor(private http: HttpClient, private store: Store<AppState>) {}
 
   login(email: string, password: string): Observable<AuthResponseData> {
     return this.http.post<AuthResponseData>(
@@ -48,6 +54,48 @@ export class AuthService {
         return 'Email already exists';
       default:
         return 'Unknown error occurred. Please try again';
+    }
+  }
+
+  setUserInLocalStorage(user: User) {
+    localStorage.setItem('userData', JSON.stringify(user));
+
+    this.runTimeoutInterval(user);
+  }
+
+  runTimeoutInterval(user: User) {
+    const todaysDate = new Date().getTime();
+    const expirationDate = user.expireDate.getTime();
+    const timeInterval = expirationDate - todaysDate;
+
+    this.timeoutInterval = setTimeout(() => {
+      // logout functionality or get the refresh token
+      this.store.dispatch(autoLogout());
+    }, timeInterval);
+  }
+
+  getUserFromLocalStorage() {
+    const userDataString = localStorage.getItem('userData');
+    if (userDataString) {
+      const userData = JSON.parse(userDataString);
+      const expirationDate = new Date(userData.expirationDate);
+      const user = new User(
+        userData.email,
+        userData.token,
+        userData.localId,
+        expirationDate
+      );
+      this.runTimeoutInterval(user);
+      return user;
+    }
+    return null;
+  }
+
+  logout() {
+    localStorage.removeItem('userData');
+    if(this.timeoutInterval) {
+      clearTimeout(this.timeoutInterval);
+      this.timeoutInterval = null;
     }
   }
 

@@ -1,20 +1,9 @@
 import { Post } from '@app/models/posts.model';
 
 export interface PostsState {
-  posts: Array<Post>
+  posts: Array<Post> | null
 }
 
 export const initialState: PostsState = {
-  posts: [
-    {
-      id: '1',
-      title: 'title 1',
-      description: 'description 1'
-    },
-    {
-      id: '2',
-      title: 'title 2',
-      description: 'description 2'
-    }
-  ]
+  posts: null
 }

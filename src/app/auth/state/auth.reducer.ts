@@ -17,12 +17,12 @@ const _authReducer = createReducer(
       user: action.user,
     };
   }),
- /* on(autoLogout, (state) => {
+ on(autoLogout, (state) => {
     return {
       ...state,
       user: null,
     };
-  })*/
+  })
 );
 
 

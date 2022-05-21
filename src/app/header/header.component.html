@@ -28,7 +28,7 @@
         </ng-container>
         <ng-template #logout>
           <li class="nav-item">
-            <a class="nav-link" href="#" [routerLink]="['/']">Logout</a>
+            <button class="nav-link btn" (click)="onLogout()">Logout</button>
           </li>
         </ng-template>
       </ul>

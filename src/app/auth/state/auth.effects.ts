@@ -1,6 +1,6 @@
 import { AuthService } from '@app/services/auth.service';
-import { catchError, exhaustMap, map, tap } from 'rxjs/operators';
-import { loginStart, loginSuccess, signupStart, signupSuccess } from './auth.actions';
+import { catchError, exhaustMap, map, mergeMap, tap } from 'rxjs/operators';
+import { autoLogin, autoLogout, loginStart, loginSuccess, signupStart, signupSuccess } from './auth.actions';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Injectable } from '@angular/core';
 import { AuthResponseData } from '@app/models/AuthResponseData.model';
@@ -36,8 +36,10 @@ export class AuthEffects {
             this.store.dispatch(setLoadingSpinner({ status: false }));
             // clear errors messages
             this.store.dispatch(setErrorMessage({ message: '' }));
-            const user = this.authService.formatUser(data)
-            return loginSuccess({ user });
+            const user = this.authService.formatUser(data);
+            // save user object into storage
+            this.authService.setUserInLocalStorage(user);
+            return loginSuccess({ user, redirect: true });
           }),
           catchError(errorResponse => {
             const resp = errorResponse.error as ErrorMessage;
@@ -61,7 +63,10 @@ export class AuthEffects {
         tap((action) => {
           // clear error
           this.store.dispatch(setErrorMessage({ message: '' }));
-          this.router.navigate(['/']);
+          if (action.redirect) {
+            this.router.navigate(['/']);
+          }
+
         })
       );
     },
@@ -76,7 +81,8 @@ export class AuthEffects {
           map((data) => {
             this.store.dispatch(setLoadingSpinner({ status: false }));
             const user = this.authService.formatUser(data);
-            return signupSuccess({ user });
+            this.authService.setUserInLocalStorage(user);
+            return signupSuccess({ user, redirect: true });
           }),
           catchError(errorResponse => {
             const resp = errorResponse.error as ErrorMessage;
@@ -89,5 +95,30 @@ export class AuthEffects {
       })
     );
   });
+
+  autoLogin$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(autoLogin),
+        mergeMap((action) => {
+          const user = this.authService.getUserFromLocalStorage();
+          return of(loginSuccess({ user, redirect: false }))
+        })
+      );
+    }
+  );
+
+  logout$ = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(autoLogout),
+        map(action => {
+          this.authService.logout();
+          this.router.navigate(['auth'])
+        })
+      )
+    },
+    { dispatch: false }
+  )
 
 }
