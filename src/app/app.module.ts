@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -17,6 +17,7 @@ import { appReducer } from './store/app.state';
 import { EffectsModule } from '@ngrx/effects';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
 import { AuthEffects } from '@app/auth/state';
+import { AuthTokenInterceptor } from './services/AuthToken.interceptor';
 
 
 
@@ -42,7 +43,13 @@ import { AuthEffects } from '@app/auth/state';
     }),
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthTokenInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

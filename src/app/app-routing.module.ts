@@ -1,29 +1,27 @@
-import { HomeComponent } from './home/home.component';
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
+import { HomeComponent } from "./home/home.component";
+import { NgModule } from "@angular/core";
+import { Routes, RouterModule } from "@angular/router";
+import { AuthGuard } from "./guards/auth.guard";
 
 const routes: Routes = [
   {
-    path: '',
+    path: "",
     component: HomeComponent,
   },
   {
-    path: 'counter',
-    loadChildren: () =>
-      import('./counter/counter.module').then((m) => m.CounterModule),
+    path: "counter",
+    loadChildren: () =>  import("./counter/counter.module").then((m) => m.CounterModule),
   },
   {
-    path: 'posts',
-    loadChildren: () =>
-      import('./posts/posts.module').then((m) => m.PostsModule),
+    path: "posts",
+    loadChildren: () => import("./posts/posts.module").then((m) => m.PostsModule),
+    canActivate: [AuthGuard],
   },
   {
-    path: 'auth',
-    loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
+    path: "auth",
+    loadChildren: () => import("./auth/auth.module").then((m) => m.AuthModule),
   },
 ];
-
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
