@@ -402,3 +402,91 @@ Need to remove `StoreModule.forFeature` and still keep `EffectsModule.forFeature
 })
 export class AuthModule {}
 ```
+
+### @ngrx/router-store
+Bindings to connect the Angular Router with Store. During each router navigation cycle, multiple actions are dispatched that allow you to listen for changes in the router's state. 
+
+```
+import { routerReducer, RouterState } from "@ngrx/router-store";
+
+export interface AppState {
+  [AUTH_STATE_NAME]: AuthState,
+  [SHARED_STATE_NAME]: SharedState,
+  router: RouterState
+}
+
+export const appReducer = {
+  [AUTH_STATE_NAME]: AuthReducer,
+  [SHARED_STATE_NAME]: SharedReducer,
+  // Install Router Store for dispatching Route Actions
+  router: routerReducer
+}
+```
+Now we can implement Custom Serializer in Ngrx Router to store only minimal data in router state
+
+```
+import { RouterStateSerializer } from '@ngrx/router-store';
+import { Params, RouterStateSnapshot } from '@angular/router';
+
+export interface RouterStateUrl {
+  url: string;
+  params: Params;
+  queryParams: Params;
+}
+
+export class CustomSerializer implements RouterStateSerializer<RouterStateUrl> {
+  serialize(routerState: RouterStateSnapshot): RouterStateUrl {
+    let route = routerState.root;
+
+    while (route.firstChild) {
+      route = route.firstChild;
+    }
+
+    const {
+      url,
+      root: { queryParams },
+    } = routerState;
+    const { params } = route;
+
+    // Only return an object including the URL, params and query params
+    // instead of the entire snapshot
+    return { url, params, queryParams };
+  }
+}
+
+```
+Add to app.module
+```
+  imports: [
+    ...
+    StoreRouterConnectingModule.forRoot({
+      serializer: CustomSerializer
+    }),   
+  ],
+```
+
+Now we can get router params from router-store instead of angular-router
+```
+    this.store
+      .select(getPostById)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(post => {
+        this.post = post;
+        this.createForm();
+      })
+```
+
+posts.selector
+```
+import { getCurrentRoute } from "@app/store/router/router.selector";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { PostsState } from "./posts.state";
+
+
+export const getPosts = createSelector(getPostsState, state => state.posts);
+
+export const getPostById = createSelector(getPosts, getCurrentRoute, (posts, route: RouterStateUrl) => {
+  return posts.find((post: Post) => post.id === route.params.id);
+});
+
+```

@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Post } from '@app/models/posts.model';
 import { AppState } from '@app/store/app.state';
 import { Store } from '@ngrx/store';
 import { Subscription, Subject } from 'rxjs';
 import { getPostById } from '../state/posts.selector';
-import { switchMap, takeUntil } from 'rxjs/operators';
-import { updatePost } from '../state/posts.actions';
+import { takeUntil, filter } from 'rxjs/operators';
+import { updatePost } from '@app/posts/state/posts.actions';
+
 
 @Component({
   selector: 'app-edit-post',
@@ -21,31 +21,29 @@ export class EditPostComponent implements OnInit {
   postSubscription: Subscription;
   destroy$ = new Subject();
 
-  constructor(
-    private route: ActivatedRoute,
-    private store: Store<AppState>,
-    private router: Router
-    ) {}
+  constructor( private store: Store<AppState>) {}
 
   ngOnInit(): void {
-
-    this.route.paramMap.pipe(
-      switchMap((params) => {
-        const id = params.get('id');
-        return this.store.select(getPostById, { id })
-      }),
+    this.createForm();
+    this.store
+    .select(getPostById)
+    .pipe(
+      filter((post) => !!post),
       takeUntil(this.destroy$)
-    ).subscribe(data => {
-      this.post = data;
-       this.createForm();
+      )
+    .subscribe(post => {
+      this.post = post;
+      this.postForm.patchValue({
+        title: post.title,
+        description: post.description
+      })
     })
-
   }
 
   createForm() {
     this.postForm = new FormGroup({
-      title: new FormControl(this.post.title, [ Validators.required ]),
-      description: new FormControl(this.post.description, [ Validators.required  ]),
+      title: new FormControl(null, [ Validators.required ]),
+      description: new FormControl(null, [ Validators.required  ]),
     });
   }
 
@@ -66,7 +64,8 @@ export class EditPostComponent implements OnInit {
 
 
     this.store.dispatch(updatePost({ post }));
-    this.router.navigate(['posts']);
+    // navigation should happen in effects
+    // this.router.navigate(['posts']);
   }
 
 
