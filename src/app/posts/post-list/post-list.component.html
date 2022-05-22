@@ -25,6 +25,8 @@
           <td>
             <button class="btn btn-sm btn-primary" [routerLink]="['edit', post.id]">Update</button>
             &nbsp;
+            <button class="btn btn-sm btn-warning" [routerLink]="['details', post.id]">View</button>
+            &nbsp;
             <button class="btn btn-sm btn-danger" (click)="deleteCurrentPost(post.id)">Delete</button>
           </td>
         </tr>

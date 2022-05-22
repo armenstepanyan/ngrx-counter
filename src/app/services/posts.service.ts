@@ -40,6 +40,12 @@ export class PostsService {
     return this.http.delete(`https://ngrx-counter-4dde3-default-rtdb.firebaseio.com/posts/${id}.json`);
   }
 
+  getPostById(id: string): Observable<Post> {
+    return this.http.get<Post>(
+      `https://ngrx-counter-4dde3-default-rtdb.firebaseio.com/posts/${id}.json`
+    );
+  }
+
 
 }
 

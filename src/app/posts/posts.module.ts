@@ -11,6 +11,7 @@ import { postsReducer } from './state/posts.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { PostsEffects } from './state/posts.effects';
 
+
 const routes: Routes = [
   {
     path: '',
@@ -23,7 +24,7 @@ const routes: Routes = [
       {
         path: 'edit/:id',
         component: EditPostComponent,
-      },
+      }
     ],
   },
 ];
@@ -31,7 +32,8 @@ const routes: Routes = [
   declarations: [
     PostListComponent,
     AddPostComponent,
-    EditPostComponent
+    EditPostComponent,
+
   ],
   imports: [
     CommonModule,

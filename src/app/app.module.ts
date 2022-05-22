@@ -21,13 +21,15 @@ import { AuthTokenInterceptor } from './services/AuthToken.interceptor';
 
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { CustomSerializer } from '@app/store/router/custom-serializer';
+import { SinglePostComponent } from './posts/single-post/single-post.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     HeaderComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    SinglePostComponent
   ],
   imports: [
     BrowserModule,
